@@ -69,11 +69,11 @@ module.exports = (object,cb,channel='message') => {
       result = result.bind(target)
     }
     if(lodash.isObject(result)){
-      console.log('object found',path,args,result)
+      // console.log('object found',path,args,result)
       cb(channel,response(path,args,result))
       return new Proxy(result,Handlers(path,cb))
     }
-    console.log('path',args,'result')
+    // console.log('path',args,'result')
     return cb(channel,response(path,args,result))
   }
 

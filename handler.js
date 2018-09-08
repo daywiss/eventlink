@@ -5,12 +5,12 @@ module.exports = Handlers = (path=[], cb, This) => {
     return args[0]
   }
 
-  function cbHandlers(path,cb){
+  function asyncHandler(path,cb){
     return {
       apply:(target,context,args)=>{
         const proxyArgs = args.map((arg,i)=>{
           if(!lodash.isFunction(arg)) return arg
-          return new Proxy(arg,cbHandlers(path,cb))
+          return new Proxy(arg,asyncHandler(path,cb))
         })
         let result =  Reflect.apply(target,context,proxyArgs)
         cb('async',path,'apply',args,result)
@@ -51,14 +51,20 @@ module.exports = Handlers = (path=[], cb, This) => {
       cb('request',path,'apply',args)
       const proxyArgs = args.map((arg,i)=>{
         if(!lodash.isFunction(arg)) return arg
-        return new Proxy(arg,cbHandlers(path,cb))
+        return new Proxy(arg,asyncHandler(path,cb))
         // return (...args)=>{
         //   console.log('clalback called',path,args)
         //   return arg(...args)
         // }
       })
 
-      let result =  Reflect.apply(target,context,proxyArgs)
+      try{
+        var result =  Reflect.apply(target,context,proxyArgs)
+      }catch(e){
+        console.log('handler error',e.message)
+        cb('error',path,'apply',args,e)
+        throw e
+      }
 
       if(lodash.isFunction(result)){
         result = result.bind(target)
