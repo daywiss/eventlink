@@ -13,6 +13,7 @@ module.exports = Handlers = (path=[], cb, This) => {
           return new Proxy(arg,asyncHandler(path,cb))
         })
         let result =  Reflect.apply(target,context,proxyArgs)
+        // console.log( 'async handler',path,args,result)
         cb('async',path,'apply',args,result)
       }
     }

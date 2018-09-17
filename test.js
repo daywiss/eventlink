@@ -39,6 +39,7 @@ const awaitMessage = events => (type='response') => match => {
         case 'async':
           console.log('async',x)
           var [result] = x.arguments
+          if(result.message) result = result.message
           break
         default:
           throw new Error('unknown response type: ' + type)
@@ -133,6 +134,7 @@ test('proxy',t=>{
   const awaitError = awaitMessage(events)('error')
   const awaitAsync = awaitMessage(events)('async')
   const awaitResponse = awaitMessage(events)()
+  const awaitAsyncError= awaitMessage(events)('async')
   let proxy
   t.test('init',t=>{
     proxy = Proxy(methods,events.emit.bind(events))
@@ -204,7 +206,7 @@ test('proxy',t=>{
     }
   })
   t.test('errorAsync',async t=>{
-    awaitError('test').then(x=>{
+    awaitAsyncError('test').then(x=>{
       t.ok(x)
       t.end()
     })

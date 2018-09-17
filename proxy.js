@@ -78,7 +78,7 @@ module.exports = (object,cb,channel='message') => {
   }
 
   function handleEvent(type,path,method,args,result,target){
-    console.log('handle',type,method,path,result)
+    console.log('handle',type,method,args,path,result)
     switch(type){
       case 'request':
         cb(channel,request(path,args,result,target))
